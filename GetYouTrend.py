@@ -201,58 +201,60 @@ def get_tf(doc_keywords):
 ####idfを算出####
 #################
 def get_idf2(tokens):
+	idf = {}
 	db_list = connectDB()
 	connector = db_list[0]
 	cursor = db_list[1]
-	idf = {}
-	sql = "select * from tweet_num;"
-	cursor.execute(sql)
-	result = cursor.fetchall()
-	twNum = result[0][0]
-	print "get_idf2..."	
-	for term in tokens:
-		#debug用
-		#print term
-		term = term.encode('utf-8')
-		term = term.replace('*','＊')
-		term = term.replace('"','”')
-		term = term.replace("'","’")
-
-		try: #term = "*" だとエラーが出るからtryにしとく
-			sql = "select num from term_num where term like '" + term + "';"
-			cursor.execute(sql)
-			result = cursor.fetchall()
-			if len(result) == 0:
-				#DBになくても同じユーザのツイートが何度も追加されたくないので追加処理はしない
-				try:
-					idf.update({term.decode('utf-8'):math.log(float(twNum))})
-				except:
-					print "\n(a)error"
-					print "term =",term
-					print "idf =",float(twNum)
-					print
-					pass
-			else:
-				#DBにあるので単語を取得
-				try:
-					db_num = result[0][0]
-					idf.update({term.decode('utf-8'):math.log(float(twNum)/(db_num+1.0))})
-				except:
-					print "\n(b)error"
-					print "term =",term
-					print "idf =",float(twNum)/(db_num+1.0)
-					print
-					pass
-		except Exception as e:
-			print "エラー(idf2)"
-			print str(type(e))
-			print str(e.args)
-			print e.message
-			print str(e)
-	print type(term)
-	print "get_idf2 fin..."
-	cursor.close()
-	connector.close()
+	try:
+		sql = "select * from tweet_num;"
+		cursor.execute(sql)
+		result = cursor.fetchall()
+		twNum = result[0][0]
+		print "get_idf2..."
+		for term in tokens:
+			#debug用
+			#print term
+			term = term.encode('utf-8')
+			term = term.replace('*','＊')
+			term = term.replace('"','”')
+			term = term.replace("'","’")
+	
+			try: #term = "*" だとエラーが出るからtryにしとく
+				sql = "select num from term_num where term like '" + term + "';"
+				cursor.execute(sql)
+				result = cursor.fetchall()
+				if len(result) == 0:
+					#DBになくても同じユーザのツイートが何度も追加されたくないので追加処理はしない
+					try:
+						idf.update({term.decode('utf-8'):math.log(float(twNum))})
+					except:
+						print "\n(a)error"
+						print "term =",term
+						print "idf =",float(twNum)
+						print
+						pass
+				else:
+					#DBにあるので単語を取得
+					try:
+						db_num = result[0][0]
+						idf.update({term.decode('utf-8'):math.log(float(twNum)/(db_num+1.0))})
+					except:
+						print "\n(b)error"
+						print "term =",term
+						print "idf =",float(twNum)/(db_num+1.0)
+						print
+						pass
+			except Exception as e:
+				print "エラー(idf2)"
+				print str(type(e))
+				print str(e.args)
+				print e.message
+				print str(e)
+		print type(term)
+		print "get_idf2 fin..."
+	finally:
+		cursor.close()
+		connector.close()
 	return idf
 
 def getTrend(scrName,usrID,protect):
