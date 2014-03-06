@@ -350,27 +350,20 @@ class AbstractedlyListener(tweepy.StreamListener):
 				#try:
 				getTrend(status.author.screen_name,status.author.id,status.author.protected)
 		elif matchFlag != None:
-			if status.author.screen_name == 'ya1_3241_ba':
-				postmsg = '@' + status.author.screen_name + ' お前が使えるわけねぇーじゃんｗｗｗｗｗヴァーーーッカｗｗｗｗｗ'
-				api.update_status(postmsg)
-			elif status.author.screen_name == 'toratorayes':
-				postmsg = '@' + status.author.screen_name + ' 福井県民はこの機能は使えませんｗｗｗｗｗ'
-                                api.update_status(postmsg)
-			else:
-				tmp = re.split('@GetYouTrend2 \[',statusText)
-				tmp1 = re.split('\]at:',tmp[1])
-				postmsg = '@' + tmp1[1] + ' ' + tmp1[0] + '（これはbotです）'
+			tmp = re.split('@GetYouTrend2 \[',statusText)
+			tmp1 = re.split('\]at:',tmp[1])
+			postmsg = '@' + tmp1[1] + ' ' + tmp1[0] + '（これはbotです）'
+			print postmsg
+			if len(postmsg) <= 140:
 				print postmsg
+				api.update_status(postmsg)
+			else:
+				print '140字を超えてます。'
+				postmsg = '@' + status.author.screen_name + '140字を超えています。'
 				if len(postmsg) <= 140:
-					print postmsg
 					api.update_status(postmsg)
 				else:
-					print '140字を超えてます。'
-					postmsg = '@' + status.author.screen_name + '140字を超えています。'
-					if len(postmsg) <= 140:
-						api.update_status(postmsg)
-					else:
-						print 'エラー'
+					print 'エラー'
 
 def main():
 	print "FistPost"
