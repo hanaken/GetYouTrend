@@ -354,13 +354,13 @@ class AbstractedlyListener(tweepy.StreamListener):
 			tmp1 = re.split('\]at:',tmp[1])
 			postmsg = '@' + tmp1[1] + ' ' + tmp1[0] + '（これはbotです）'
 			print postmsg
-			if len(postmsg) <= 140:
+			if len(postmsg.decode('utf-8')) <= 140:
 				print postmsg
 				api.update_status(postmsg)
 			else:
 				print '140字を超えてます。'
 				postmsg = '@' + status.author.screen_name + '140字を超えています。'
-				if len(postmsg) <= 140:
+				if len(postmsg.decode('utf-8')) <= 140:
 					api.update_status(postmsg)
 				else:
 					print 'エラー'
